@@ -106,7 +106,7 @@ mvn spring-boot:run
 - Integrated with FullCalendar JS library, users can easily manage their calendar, create, edit, and delete meetings.
 - Automated email notifications are sent to attendees when meetings are scheduled or modified.
 
-### Google Gmail Integration
+### (X) Google Gmail Integration
 
 - Users can send emails, save drafts, and manage their inbox, sent items, drafts, and trash directly within the CRM application.
 - Gmail integration streamlines communication and enables efficient email management.

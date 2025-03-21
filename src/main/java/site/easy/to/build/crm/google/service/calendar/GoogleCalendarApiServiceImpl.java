@@ -1,18 +1,5 @@
 package site.easy.to.build.crm.google.service.calendar;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.http.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import site.easy.to.build.crm.entity.Lead;
-import site.easy.to.build.crm.entity.OAuthUser;
-import site.easy.to.build.crm.google.model.calendar.*;
-import site.easy.to.build.crm.google.util.GoogleApiHelper;
-import site.easy.to.build.crm.service.lead.LeadService;
-import site.easy.to.build.crm.service.user.OAuthUserService;
-import site.easy.to.build.crm.google.util.TimeDateUtil;
-
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -21,6 +8,29 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.http.ByteArrayContent;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpContent;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.HttpResponse;
+
+import site.easy.to.build.crm.entity.Lead;
+import site.easy.to.build.crm.entity.OAuthUser;
+import site.easy.to.build.crm.google.model.calendar.Event;
+import site.easy.to.build.crm.google.model.calendar.EventDateTime;
+import site.easy.to.build.crm.google.model.calendar.EventDisplay;
+import site.easy.to.build.crm.google.model.calendar.EventDisplayList;
+import site.easy.to.build.crm.google.model.calendar.EventList;
+import site.easy.to.build.crm.google.util.GoogleApiHelper;
+import site.easy.to.build.crm.google.util.TimeDateUtil;
+import site.easy.to.build.crm.service.lead.LeadService;
+import site.easy.to.build.crm.service.user.OAuthUserService;
 
 @Service
 public class GoogleCalendarApiServiceImpl implements GoogleCalendarApiService {
@@ -58,24 +68,26 @@ public class GoogleCalendarApiServiceImpl implements GoogleCalendarApiService {
 
         // Convert Event objects to EventDisplay objects
         List<EventDisplay> eventDisplays = eventList.getItems().stream()
-                .map(event -> {
-                    EventDateTime start = event.getStart();
-                    EventDateTime end = event.getEnd();
-                    Map<String, String> startDateTimeParts = TimeDateUtil.extractDateTime(start.getDateTime());
-                    Map<String, String> endDateTimeParts = TimeDateUtil.extractDateTime(end.getDateTime());
+        .filter(event -> event.getStart().getDateTime() != null && event.getEnd().getDateTime() != null) // ne pas considérer les événements journaliers
+        .map(event -> {
+            EventDateTime start = event.getStart();
+            EventDateTime end = event.getEnd();
+            Map<String, String> startDateTimeParts = TimeDateUtil.extractDateTime(start.getDateTime());
+            Map<String, String> endDateTimeParts = TimeDateUtil.extractDateTime(end.getDateTime());
 
-                    return new EventDisplay(
-                            event.getId(),
-                            event.getSummary(),
-                            startDateTimeParts.get("date"),
-                            startDateTimeParts.get("time"),
-                            endDateTimeParts.get("date"),
-                            endDateTimeParts.get("time"),
-                            startDateTimeParts.get("timeZone"),
-                            event.getAttendees()
-                    );
-                })
-                .collect(Collectors.toList());
+            return new EventDisplay(
+                    event.getId(),
+                    event.getSummary(),
+                    startDateTimeParts.get("date"),
+                    startDateTimeParts.get("time"),
+                    endDateTimeParts.get("date"),
+                    endDateTimeParts.get("time"),
+                    startDateTimeParts.get("timeZone"),
+                    event.getAttendees()
+            );
+        })
+        .collect(Collectors.toList());
+
 
         return new EventDisplayList(eventDisplays);
     }
