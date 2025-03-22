@@ -18,10 +18,15 @@ import site.easy.to.build.crm.entity.OAuthUser;
 import site.easy.to.build.crm.entity.User;
 import site.easy.to.build.crm.google.service.acess.GoogleAccessService;
 import site.easy.to.build.crm.service.data.CleanDataService;
+import site.easy.to.build.crm.service.data.ImportService;
 import site.easy.to.build.crm.service.user.OAuthUserService;
 import site.easy.to.build.crm.service.user.UserService;
 import site.easy.to.build.crm.util.AuthenticationUtils;
 
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import site.easy.to.build.crm.config.entity.ListImport;
 
 @RequestMapping("/data")
 @Controller
@@ -32,14 +37,43 @@ public class DataManagerController {
     final OAuthUserService oAuthUserService;
     final AuthenticationUtils authenticationUtils;
     final CleanDataService cleanDataService;
+    final ImportService importService;
 
-    public DataManagerController(GoogleAccessService googleAccessService, UserService userService, OAuthUserService oAuthUserService, AuthenticationUtils authenticationUtils, CleanDataService cleanDataService) {
+    public DataManagerController(GoogleAccessService googleAccessService, UserService userService, OAuthUserService oAuthUserService, AuthenticationUtils authenticationUtils, CleanDataService cleanDataService, ImportService importService) {
         this.googleAccessService = googleAccessService;
         this.userService = userService;
         this.oAuthUserService = oAuthUserService;
         this.authenticationUtils = authenticationUtils;
         this.cleanDataService = cleanDataService;
+        this.importService = importService;
     }
+
+    @PostMapping("/importcsv")
+    public String importCSV(@RequestParam("csvfile") MultipartFile csvFile, int idEntity, RedirectAttributes redirectAttributes) {
+        String redirection;
+        String message;
+        try {
+            this.importService.importCsvAndInsertData(csvFile, idEntity);
+            message = "Success : Importation succeeded";
+            redirection = "redirect:/data/importcsv/form";
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            message = "Error : "+e.getMessage();
+            redirection ="error/500";
+        }
+        redirectAttributes.addFlashAttribute("message", message);
+        return redirection;
+    }
+    
+
+    @GetMapping("/importcsv/form")
+    public String getFormCsvImport(@ModelAttribute("message") String message, Model model) {
+        model.addAttribute("message", message);
+        model.addAttribute("entities", ListImport.getImportentities());
+        return "manager/data-managing/import-csv-data";
+    }
+    
 
     @PostMapping("/clean")
     public String cleanData(RedirectAttributes redirectAttributes) {
@@ -65,7 +99,7 @@ public class DataManagerController {
         model.addAttribute("message", message);
         if (authentication instanceof UsernamePasswordAuthenticationToken) {
             model.addAttribute("oAuthUser", null);
-            return "manager/data-managing/form-clean-data";
+            return "manager/data-managing/clean-data";
         }
 
         int userId = authenticationUtils.getLoggedInUserId(authentication);
@@ -81,7 +115,7 @@ public class DataManagerController {
         googleAccessService.verifyAccessAndHandleRevokedToken(oAuthUser, user, scopesToCheck);
         oAuthUserService.save(oAuthUser, user);
         model.addAttribute("oAuthUser", oAuthUser);
-        return "manager/data-managing/form-clean-data";
+        return "manager/data-managing/clean-data";
     }
     
 
