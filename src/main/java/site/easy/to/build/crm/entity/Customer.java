@@ -74,6 +74,11 @@ public class Customer {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    public Customer(Integer id) {
+        this.setCustomerId(id);
+    }
+
+
     public Customer() {
     }
 

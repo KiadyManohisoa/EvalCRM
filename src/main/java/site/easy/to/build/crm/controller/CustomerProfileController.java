@@ -8,8 +8,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import site.easy.to.build.crm.entity.*;
+import site.easy.to.build.crm.entity.budget.Budget;
+import site.easy.to.build.crm.google.model.calendar.EventDisplay;
 import site.easy.to.build.crm.google.model.gmail.Attachment;
 import site.easy.to.build.crm.service.contract.ContractService;
+import site.easy.to.build.crm.service.customer.BudgetService;
 import site.easy.to.build.crm.service.customer.CustomerLoginInfoService;
 import site.easy.to.build.crm.service.customer.CustomerService;
 import site.easy.to.build.crm.service.file.FileService;
@@ -23,6 +26,8 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 @Controller
 @RequestMapping("/customer")
 public class CustomerProfileController {
@@ -34,7 +39,9 @@ public class CustomerProfileController {
     private final ContractService contractService;
     private final LeadService leadService;
     private final FileService fileService;
-    public CustomerProfileController(CustomerService customerService, AuthenticationUtils authenticationUtils, CustomerLoginInfoService customerLoginInfoService, UserService userService, TicketService ticketService, ContractService contractService, LeadService leadService, FileService fileService) {
+    private final BudgetService budgetService;
+
+    public CustomerProfileController(CustomerService customerService, AuthenticationUtils authenticationUtils, CustomerLoginInfoService customerLoginInfoService, UserService userService, TicketService ticketService, ContractService contractService, LeadService leadService, FileService fileService, BudgetService budgetService) {
         this.customerService = customerService;
         this.authenticationUtils = authenticationUtils;
         this.customerLoginInfoService = customerLoginInfoService;
@@ -43,6 +50,7 @@ public class CustomerProfileController {
         this.contractService = contractService;
         this.leadService = leadService;
         this.fileService = fileService;
+        this.budgetService = budgetService;
     }
 
     @GetMapping("/profile")
@@ -92,8 +100,43 @@ public class CustomerProfileController {
         return "redirect:/customer/profile";
     }
 
+    @PostMapping("/add-budget")
+    public String addBudget(@ModelAttribute Budget budget, Authentication authentication, RedirectAttributes redirectAttributes) {
+        String redirection = "redirect:/customer/my-budgets";
+        String message;
+        try {
+            int customerId = authenticationUtils.getLoggedInUserId(authentication);
+            CustomerLoginInfo customerLoginInfo = customerLoginInfoService.findById(customerId);
+            Customer customer = customerService.findByEmail(customerLoginInfo.getEmail());
+            budget.setAddedAt();
+            budgetService.saveBudget(customer, budget);
+            message = "Success : budget added with no problem";
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            message = e.getMessage();
+        }
+        redirectAttributes.addFlashAttribute("message", message);
+        return redirection;
+    }
+    
+
+    @GetMapping("/my-budgets")
+    public String showMyBudgets(@ModelAttribute("message") String message, Model model, Authentication authentication) {
+        model.addAttribute("message", message);
+        model.addAttribute("budget", new Budget());
+
+        int customerId = authenticationUtils.getLoggedInUserId(authentication);
+        CustomerLoginInfo customerLoginInfo = customerLoginInfoService.findById(customerId);
+        Customer customer = customerService.findByEmail(customerLoginInfo.getEmail());
+        model.addAttribute("budgets", budgetService.getBudgetsByCustomerId(customer.getCustomerId()));
+        
+        return "customer-info/my-budgets";
+    }
+    
+
     @GetMapping("/my-tickets")
-    public String showMyTickets(Model model, Authentication authentication){
+    public String showMyTickets(Model model, Authentication authentication) {
         int customerId = authenticationUtils.getLoggedInUserId(authentication);
         CustomerLoginInfo customerLoginInfo = customerLoginInfoService.findById(customerId);
         Customer customer = customerService.findByEmail(customerLoginInfo.getEmail());
