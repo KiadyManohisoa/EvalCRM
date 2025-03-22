@@ -88,7 +88,7 @@
                     </a>
                     <ul th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" class="collapse">
                         <li><a th:href="${home + 'data/clean/form'}">Clean data</a></li>
-                        <li><a th:href="${home + 'manager/all-users'}">Import data</a></li>
+                        <li><a th:href="${home + 'data/importcsv/form'}">Import data</a></li>
                         <li><a th:href="${home + 'manager/register-user'}">Generate data</a></li>
                     </ul>
                 </li>
