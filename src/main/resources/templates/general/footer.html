@@ -1,3 +1,10 @@
 <footer class="footer">
     © 2023 CRM by <a href="https://github.com/wp-ahmed">Ahmed Samir</a>
 </footer>
+
+<div th:if="${message != null and #strings.length(message) > 0 and not #strings.isEmpty(message)}">
+    <script th:inline="javascript">
+        alert([[${message}]]);
+    </script>
+</div>
+

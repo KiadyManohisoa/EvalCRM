@@ -78,6 +78,22 @@
                         </li>
                     </ul>
                 </li>
+
+                <!--Data management-->
+                <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" class="nav-small-cap">--- Data management</li>
+                <li>
+                    <a th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" class="has-arrow waves-effect waves-dark" href="javascript:void(0)">
+                        <i class="fas fa-database"></i>
+                        <span class="hide-menu">Data management</span>
+                    </a>
+                    <ul th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" class="collapse">
+                        <li><a th:href="${home + 'data/clean/form'}">Clean data</a></li>
+                        <li><a th:href="${home + 'manager/all-users'}">Import data</a></li>
+                        <li><a th:href="${home + 'manager/register-user'}">Generate data</a></li>
+                    </ul>
+                </li>
+                <!--Data management-->
+
                 <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" class="nav-small-cap">--- Users</li>
                 <li>
                     <a th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" class="has-arrow waves-effect waves-dark" href="javascript:void(0)">
