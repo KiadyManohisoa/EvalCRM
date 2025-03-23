@@ -16,6 +16,7 @@ public class ListClean {
         add("file");
         add("lead_action");
         add("google_drive_file");
+        add("customer_budget");
     }};    
 
     public static List<String> getEntities() {
