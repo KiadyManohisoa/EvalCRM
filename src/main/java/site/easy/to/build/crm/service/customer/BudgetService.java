@@ -13,6 +13,16 @@ public class BudgetService {
 
     private final BudgetRepository budgetRepository;
 
+    public boolean canCustomerAffordExpense(Customer customer, double expense) {
+        this.setCustomerBudget(customer);
+        return customer.hasEnoughBudget(expense);
+    }
+
+    public void setCustomerBudget(Customer costumer) {
+        double customerBudget = this.budgetRepository.findTotalBudgetByCustomerId(costumer.getCustomerId());
+        costumer.setBudget(customerBudget);
+    }
+
     public BudgetService(BudgetRepository budgetRepository) {
         this.budgetRepository = budgetRepository;
     }

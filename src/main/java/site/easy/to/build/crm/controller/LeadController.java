@@ -16,7 +16,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import site.easy.to.build.crm.entity.*;
+import site.easy.to.build.crm.entity.budget.Budget;
+import site.easy.to.build.crm.entity.budget.BudgetConfig;
+import site.easy.to.build.crm.entity.budget.CustomerExpenses;
 import site.easy.to.build.crm.entity.settings.LeadEmailSettings;
 import site.easy.to.build.crm.google.model.calendar.EventDisplay;
 import site.easy.to.build.crm.google.model.drive.GoogleDriveFolder;
@@ -25,6 +30,9 @@ import site.easy.to.build.crm.google.service.acess.GoogleAccessService;
 import site.easy.to.build.crm.google.service.calendar.GoogleCalendarApiService;
 import site.easy.to.build.crm.google.service.drive.GoogleDriveApiService;
 import site.easy.to.build.crm.google.service.gmail.GoogleGmailApiService;
+import site.easy.to.build.crm.service.customer.BudgetConfigService;
+import site.easy.to.build.crm.service.customer.BudgetService;
+import site.easy.to.build.crm.service.customer.CustomerExpensesService;
 import site.easy.to.build.crm.service.customer.CustomerService;
 import site.easy.to.build.crm.service.drive.GoogleDriveFileService;
 import site.easy.to.build.crm.service.file.FileService;
@@ -60,12 +68,16 @@ public class LeadController {
     private final LeadEmailSettingsService leadEmailSettingsService;
     private final GoogleGmailApiService googleGmailApiService;
     private final EntityManager entityManager;
+    private final CustomerExpensesService customerExpensesService;
+    private final BudgetService budgetService;
+    private final BudgetConfigService budgetConfigService;
 
     @Autowired
     public LeadController(LeadService leadService, AuthenticationUtils authenticationUtils, UserService userService, CustomerService customerService,
                           LeadActionService leadActionService, GoogleCalendarApiService googleCalendarApiService, FileService fileService,
                           GoogleDriveApiService googleDriveApiService, GoogleDriveFileService googleDriveFileService, FileUtil fileUtil,
-                          LeadEmailSettingsService leadEmailSettingsService, GoogleGmailApiService googleGmailApiService, EntityManager entityManager) {
+                          LeadEmailSettingsService leadEmailSettingsService, GoogleGmailApiService googleGmailApiService, EntityManager entityManager, 
+                          CustomerExpensesService custom_exp_serv, BudgetService budgetService, BudgetConfigService budgetConfigService) {
         this.leadService = leadService;
         this.authenticationUtils = authenticationUtils;
         this.userService = userService;
@@ -79,6 +91,9 @@ public class LeadController {
         this.leadEmailSettingsService = leadEmailSettingsService;
         this.googleGmailApiService = googleGmailApiService;
         this.entityManager = entityManager;
+        this.customerExpensesService = custom_exp_serv;
+        this.budgetService = budgetService;
+        this.budgetConfigService = budgetConfigService;
     }
 
     @GetMapping("/show/{id}")
@@ -153,22 +168,26 @@ public class LeadController {
     }
 
     @GetMapping("/create")
-    public String showCreatingForm(Model model, Authentication authentication) {
+    public String showCreatingForm(@ModelAttribute("message") String message, Model model, Authentication authentication) {
+        model.addAttribute("message", message);
+
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         User user = userService.findById(userId);
         if(user.isInactiveUser()) {
             return "error/account-inactive";
         }
         populateModelAttributes(model, authentication, user);
+        BudgetConfig budgetConfig = this.budgetConfigService.getLatestConfig();
+        model.addAttribute("alert_rate", budgetConfig.getAlertRate());
         model.addAttribute("lead", new Lead());
         return "lead/create-lead";
     }
 
     @PostMapping("/create")
     public String createLead(@ModelAttribute("lead") @Validated Lead lead, BindingResult bindingResult,
-                             @RequestParam("customerId") int customerId, @RequestParam("employeeId") int employeeId,
-                             Authentication authentication, @RequestParam("allFiles")@Nullable String files,
-                             @RequestParam("folderId") @Nullable String folderId, Model model) throws JsonProcessingException {
+                        @RequestParam("customerId") int customerId, @RequestParam("employeeId") int employeeId, @RequestParam("expenseAmount") double expenseAmount,
+                        Authentication authentication, @RequestParam("allFiles")@Nullable String files,
+                        @RequestParam("folderId") @Nullable String folderId, Model model, RedirectAttributes redirectAttributes) throws JsonProcessingException {
 
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         User manager = userService.findById(userId);
@@ -208,7 +227,19 @@ public class LeadController {
             }
         }
 
+        boolean answer = this.budgetService.canCustomerAffordExpense(customer, expenseAmount);
+        if(!answer) {
+            redirectAttributes.addFlashAttribute("message", "Error : this customer does not have enough budget for this lead");
+            return "redirect:/employee/lead/create";
+        }
+
         Lead createdLead = leadService.save(lead);
+        this.customerExpensesService.save(new CustomerExpenses(expenseAmount, createdLead));
+        Budget budget = new Budget();
+        budget.setAmount(expenseAmount * -1);
+        budget.setAddedAt();
+        budgetService.saveBudget(customer, budget);
+
         fileUtil.saveFiles(allFiles, createdLead);
 
         if (lead.getGoogleDrive() != null) {

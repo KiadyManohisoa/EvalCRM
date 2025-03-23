@@ -1,6 +1,17 @@
 package site.easy.to.build.crm.controller;
 
-import jakarta.persistence.EntityManager;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.security.GeneralSecurityException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -10,25 +21,40 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import site.easy.to.build.crm.entity.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import jakarta.persistence.EntityManager;
+import site.easy.to.build.crm.entity.Customer;
+import site.easy.to.build.crm.entity.CustomerLoginInfo;
+import site.easy.to.build.crm.entity.EmailTemplate;
+import site.easy.to.build.crm.entity.OAuthUser;
+import site.easy.to.build.crm.entity.Ticket;
+import site.easy.to.build.crm.entity.User;
+import site.easy.to.build.crm.entity.budget.Budget;
+import site.easy.to.build.crm.entity.budget.BudgetConfig;
+import site.easy.to.build.crm.entity.budget.CustomerExpenses;
 import site.easy.to.build.crm.entity.settings.TicketEmailSettings;
 import site.easy.to.build.crm.google.service.acess.GoogleAccessService;
 import site.easy.to.build.crm.google.service.gmail.GoogleGmailApiService;
+import site.easy.to.build.crm.service.customer.BudgetConfigService;
+import site.easy.to.build.crm.service.customer.BudgetService;
+import site.easy.to.build.crm.service.customer.CustomerExpensesService;
 import site.easy.to.build.crm.service.customer.CustomerService;
 import site.easy.to.build.crm.service.settings.TicketEmailSettingsService;
 import site.easy.to.build.crm.service.ticket.TicketService;
 import site.easy.to.build.crm.service.user.UserService;
-import site.easy.to.build.crm.util.*;
+import site.easy.to.build.crm.util.AuthenticationUtils;
+import site.easy.to.build.crm.util.AuthorizationUtil;
+import site.easy.to.build.crm.util.DatabaseUtil;
+import site.easy.to.build.crm.util.LogEntityChanges;
+import site.easy.to.build.crm.util.StringUtils;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.security.GeneralSecurityException;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Controller
 @RequestMapping("/employee/ticket")
@@ -41,11 +67,14 @@ public class TicketController {
     private final TicketEmailSettingsService ticketEmailSettingsService;
     private final GoogleGmailApiService googleGmailApiService;
     private final EntityManager entityManager;
-
+    private final CustomerExpensesService customerExpensesService;
+    private final BudgetService budgetService;
+    private final BudgetConfigService budgetConfigService;
 
     @Autowired
     public TicketController(TicketService ticketService, AuthenticationUtils authenticationUtils, UserService userService, CustomerService customerService,
-                            TicketEmailSettingsService ticketEmailSettingsService, GoogleGmailApiService googleGmailApiService, EntityManager entityManager) {
+                            TicketEmailSettingsService ticketEmailSettingsService, GoogleGmailApiService googleGmailApiService, EntityManager entityManager,
+                            CustomerExpensesService custom_exp_serv, BudgetService budgetService, BudgetConfigService budgetConfigService) {
         this.ticketService = ticketService;
         this.authenticationUtils = authenticationUtils;
         this.userService = userService;
@@ -53,6 +82,9 @@ public class TicketController {
         this.ticketEmailSettingsService = ticketEmailSettingsService;
         this.googleGmailApiService = googleGmailApiService;
         this.entityManager = entityManager;
+        this.customerExpensesService = custom_exp_serv;
+        this.budgetService = budgetService;
+        this.budgetConfigService = budgetConfigService;
     }
 
     @GetMapping("/show-ticket/{id}")
@@ -98,8 +130,10 @@ public class TicketController {
         model.addAttribute("tickets",tickets);
         return "ticket/my-tickets";
     }
+
     @GetMapping("/create-ticket")
-    public String showTicketCreationForm(Model model, Authentication authentication) {
+    public String showTicketCreationForm(@ModelAttribute("message") String message, Model model, Authentication authentication) {
+        model.addAttribute("message", message);
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         User user = userService.findById(userId);
         if(user.isInactiveUser()) {
@@ -115,7 +149,9 @@ public class TicketController {
             employees.add(user);
             customers = customerService.findByUserId(user.getId());
         }
-
+        
+        BudgetConfig budgetConfig = this.budgetConfigService.getLatestConfig();
+        model.addAttribute("alert_rate", budgetConfig.getAlertRate());
         model.addAttribute("employees",employees);
         model.addAttribute("customers",customers);
         model.addAttribute("ticket", new Ticket());
@@ -125,7 +161,8 @@ public class TicketController {
     @PostMapping("/create-ticket")
     public String createTicket(@ModelAttribute("ticket") @Validated Ticket ticket, BindingResult bindingResult, @RequestParam("customerId") int customerId,
                                @RequestParam Map<String, String> formParams, Model model,
-                               @RequestParam("employeeId") int employeeId, Authentication authentication) {
+                               @RequestParam("employeeId") int employeeId, @RequestParam("expenseAmount") double expenseAmount, 
+                               Authentication authentication, RedirectAttributes redirectAttributes) {
 
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         User manager = userService.findById(userId);
@@ -168,8 +205,19 @@ public class TicketController {
         ticket.setManager(manager);
         ticket.setEmployee(employee);
         ticket.setCreatedAt(LocalDateTime.now());
-
-        ticketService.save(ticket);
+        boolean answer = this.budgetService.canCustomerAffordExpense(customer, expenseAmount);
+        if(!answer) {
+            redirectAttributes.addFlashAttribute("message", "Error : this customer does not have enough budget for this ticket");
+            return "redirect:/employee/ticket/create-ticket";
+        }
+        ticket = ticketService.save(ticket);
+        CustomerExpenses cust_exp = new CustomerExpenses(expenseAmount, ticket);
+        
+        this.customerExpensesService.save(cust_exp);
+        Budget budget = new Budget();
+        budget.setAmount(expenseAmount * -1);
+        budget.setAddedAt();
+        budgetService.saveBudget(customer, budget);
 
         return "redirect:/employee/ticket/assigned-tickets";
     }

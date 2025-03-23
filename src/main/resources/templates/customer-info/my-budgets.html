@@ -81,7 +81,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">Add budget</h4>
-                            <form th:action="@{/customer/add-budget}" th:object="${budget}" method="post" class="mb-3">
+                            <form id="addBudgetForm" th:action="@{/customer/add-budget}" th:object="${budget}" method="post" class="mb-3">
                                 <label class="m-t-20" for="theamount">Amount:</label>
                                 <div class="input-group">
                                     <input type="text" id="theamount" th:field="*{amount}" class="form-control">
@@ -192,6 +192,36 @@
 <!-- Editable -->
 <script th:src="@{/js/library/jquery.dataTables.min.js}"></script>
 <script th:src="@{/js/library/dataTables.responsive.min.js}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("addBudgetForm");
+        const theAmountInput = document.getElementById("theamount");
+        const actualBudget = parseFloat("[[${actual_budget}]]");
+        const maxBudget = parseFloat("[[${max_budget}]]");
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault(); // Empêcher l'envoi automatique du formulaire
+
+            let theAmount = parseFloat(theAmountInput.value);
+            if (isNaN(theAmount)) {
+                alert("Please enter a valid amount.");
+                return;
+            }
+
+            let newBudget = actualBudget + theAmount;
+
+            if (newBudget > maxBudget) {
+                if (!confirm(`This action will exceed the max budget (${maxBudget}). Do you want to continue?`)) {
+                    return;
+                }
+            }
+
+
+            form.submit(); // Envoi du formulaire si confirmé
+        });
+    });
+</script>
+
 <script>
     $('#config-table').DataTable({
         responsive: true

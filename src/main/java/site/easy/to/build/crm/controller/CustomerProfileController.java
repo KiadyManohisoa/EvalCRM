@@ -9,9 +9,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import site.easy.to.build.crm.entity.*;
 import site.easy.to.build.crm.entity.budget.Budget;
+import site.easy.to.build.crm.entity.budget.BudgetConfig;
 import site.easy.to.build.crm.google.model.calendar.EventDisplay;
 import site.easy.to.build.crm.google.model.gmail.Attachment;
 import site.easy.to.build.crm.service.contract.ContractService;
+import site.easy.to.build.crm.service.customer.BudgetConfigService;
 import site.easy.to.build.crm.service.customer.BudgetService;
 import site.easy.to.build.crm.service.customer.CustomerLoginInfoService;
 import site.easy.to.build.crm.service.customer.CustomerService;
@@ -40,8 +42,10 @@ public class CustomerProfileController {
     private final LeadService leadService;
     private final FileService fileService;
     private final BudgetService budgetService;
+    private final BudgetConfigService budgetConfigService;    
 
-    public CustomerProfileController(CustomerService customerService, AuthenticationUtils authenticationUtils, CustomerLoginInfoService customerLoginInfoService, UserService userService, TicketService ticketService, ContractService contractService, LeadService leadService, FileService fileService, BudgetService budgetService) {
+    public CustomerProfileController(CustomerService customerService, AuthenticationUtils authenticationUtils, CustomerLoginInfoService customerLoginInfoService, UserService userService, TicketService ticketService, ContractService contractService, LeadService leadService, FileService fileService, 
+        BudgetService budgetService, BudgetConfigService budgetConfigService) {
         this.customerService = customerService;
         this.authenticationUtils = authenticationUtils;
         this.customerLoginInfoService = customerLoginInfoService;
@@ -51,6 +55,7 @@ public class CustomerProfileController {
         this.leadService = leadService;
         this.fileService = fileService;
         this.budgetService = budgetService;
+        this.budgetConfigService = budgetConfigService;
     }
 
     @GetMapping("/profile")
@@ -129,8 +134,14 @@ public class CustomerProfileController {
         int customerId = authenticationUtils.getLoggedInUserId(authentication);
         CustomerLoginInfo customerLoginInfo = customerLoginInfoService.findById(customerId);
         Customer customer = customerService.findByEmail(customerLoginInfo.getEmail());
+        this.budgetService.setCustomerBudget(customer);
         model.addAttribute("budgets", budgetService.getBudgetsByCustomerId(customer.getCustomerId()));
         
+        BudgetConfig latestConfig = this.budgetConfigService.getLatestConfig();
+
+        model.addAttribute("actual_budget", customer.getBudget());
+        model.addAttribute("max_budget", latestConfig.getMaxBudget());
+
         return "customer-info/my-budgets";
     }
     
