@@ -70,7 +70,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">Create New Ticket</h4>
-                            <form th:object="${ticket}" th:action="@{/employee/ticket/create-ticket}" method="post">
+                            <form th:object="${ticket}" th:action="@{/employee/ticket/create-ticket}" method="post" id="email-form">
 
                                 <label class="m-t-20" for="subject">Subject:</label>
                                 <div class="input-group">
@@ -132,6 +132,7 @@
                                 <label class="m-t-20" for="customerId">Customer:</label>
                                 <div class="input-group">
                                     <select name="customerId" id="customerId" class="form-control">
+                                        <option value="">Choose a customer</option>
                                         <option th:each="customer : ${customers}" th:text="${customer.name}" th:value="${customer.customerId}"></option>
                                     </select>
                                 </div>
@@ -181,7 +182,7 @@
 <!-- All Jquery -->
 <!-- ============================================================== -->
 <script th:inline="javascript">
-    var home = /*[[${home}]]*/ null;
+    var home = [[${home}]];
 </script>
 <script th:src="@{/js/library/jquery-3.2.1.min.js}" type="text/javascript"></script>
 <!--    &lt;!&ndash; Bootstrap tether Core JavaScript &ndash;&gt;-->
@@ -199,6 +200,10 @@
 <!--Custom JavaScript -->
 <script th:src="@{/js/library/custom.min.js}" type="text/javascript"></script>
 <!-- Editable -->
+<script>
+    const alert_rate = parseFloat([[${alert_rate}]]);
+</script>
+<script th:src="@{/js/modules/customerBudget.js}"></script>
 
 <script th:src="@{/js/library/wysihtml5-0.3.0.js}"></script>
 <script th:src="@{/js/library/bootstrap-wysihtml5.js}"></script>

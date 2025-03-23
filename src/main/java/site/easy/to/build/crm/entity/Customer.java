@@ -1,14 +1,24 @@
 package site.easy.to.build.crm.entity;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.groups.Default;
 import site.easy.to.build.crm.customValidations.customer.UniqueEmail;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "customer")
@@ -73,6 +83,13 @@ public class Customer {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Transient  
+    private double budget;
+
+    public boolean hasEnoughBudget(double expense) {
+        return this.budget >= expense;
+    }
 
     public Customer(Integer id) {
         this.setCustomerId(id);
@@ -228,6 +245,15 @@ public class Customer {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public double getBudget() {
+        return budget;
+    }
+
+
+    public void setBudget(double budget) {
+        this.budget = budget;
     }
 
 //    public List<Ticket> getTickets() {
