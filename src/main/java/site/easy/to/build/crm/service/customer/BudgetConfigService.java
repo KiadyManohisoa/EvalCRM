@@ -12,6 +12,11 @@ public class BudgetConfigService {
     @Autowired
     private BudgetConfigRepository budgetConfigRepository;
 
+    public BudgetConfig save(BudgetConfig budget) {
+        this.budgetConfigRepository.save(budget);
+        return budget;
+    }
+
     public BudgetConfig getLatestConfig() {
         return budgetConfigRepository.findLatestConfig();
     }

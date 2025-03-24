@@ -26,6 +26,15 @@ public class BudgetConfig {
     @Column(name = "config_date", nullable = false, updatable = false)
     private LocalDateTime configDate;
 
+    public BudgetConfig() {
+    }
+
+    public BudgetConfig(Double alertRate, Double maxBudget) {
+        this.setAlertRate(alertRate);
+        this.setMaxBudget(maxBudget);
+        this.setConfigDate(LocalDateTime.now());
+    }
+
     public Integer getId() {
         return id;
     }

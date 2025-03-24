@@ -11,5 +11,6 @@ public interface BudgetConfigRepository extends JpaRepository<BudgetConfig, Inte
 
     @Query(value = "SELECT * FROM budget_config ORDER BY config_date DESC LIMIT 1", nativeQuery = true)
     BudgetConfig findLatestConfig();
+
     
 }
