@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{/general/head.html}"></div>
+<meta name="_csrf" content="${_csrf.token}"/>
+<meta name="_csrf_header" content="${_csrf.headerName}"/>
+
+<link th:href="@{/css/bootstrap-material-datetimepicker.css}" rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/bootstrap-wysihtml5.css}"/>
+<link th:href="@{/css/jquery-clockpicker.min.css}" rel="stylesheet">
+<link th:href="@{/css/tagify.css}" rel="stylesheet" type="text/css" />
+
+
+<!-- Editable CSS -->
+<link rel="stylesheet" type="text/css"
+      th:href="@{/css/dataTables.bootstrap4.css}">
+<link rel="stylesheet" type="text/css"
+      th:href="@{/css/responsive.dataTables.min.css}">
+
+<!-- Custom CSS -->
+<link th:href="@{/css/style.min.css}" rel="stylesheet">
+<!-- page css -->
+<link th:href="@{/css/pages/inbox.css}" rel="stylesheet">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+</head>
+
+<body class="skin-blue fixed-layout">
+<!-- ============================================================== -->
+<!-- Preloader - style you can find in spinners.css -->
+<!-- ============================================================== -->
+<div class="preloader">
+    <div class="loader">
+        <div class="loader__figure"></div>
+        <p class="loader__label">CRM</p>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- Main wrapper - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<div id="main-wrapper">
+    <!-- ============================================================== -->
+    <!-- Topbar header - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+    <div th:insert="~{/general/header.html}"></div>
+    <!-- ============================================================== -->
+    <!-- End Topbar header -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Left Sidebar - style you can find in sidebar.scss  -->
+    <!-- ============================================================== -->
+    <div th:insert="~{/general/left-sidebar.html}"></div>
+    <!-- ============================================================== -->
+    <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Page wrapper  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <!-- ============================================================== -->
+        <!-- Container fluid  -->
+        <!-- ============================================================== -->
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div th:insert="~{/general/page-titles.html}"></div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Start Page Content -->
+            <!-- ============================================================== -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Add budget</h4>
+                            <form id="addBudgetForm" th:action="@{/customer/add-budget}" th:object="${budget}" method="post" class="mb-3">
+                                <label class="m-t-20" for="theamount">Amount:</label>
+                                <div class="input-group">
+                                    <input type="text" id="theamount" th:field="*{amount}" class="form-control">
+                                </div>
+                            
+                                <label class="m-t-20" for="added_date">Added date:</label>
+                                <div class="input-group">
+                                    <input type="text" id="added_date" th:field="*{addedDate}" class="form-control mydatepicker"
+                                           placeholder="YYYY-MM-DD" data-date-format="yyyy-mm-dd" autocomplete="off">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text"><i class="icon-calender"></i></span>
+                                    </div>
+                                </div>
+                            
+                                <label class="m-t-20" for="startTime">Added time:</label>
+                                <div class="input-group clockpicker">
+                                    <input id="startTime" type="text" th:field="*{addedTime}" class="form-control" value="00:00" autocomplete="off">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                    </div>
+                                </div>
+                            
+                                <input type="hidden" id="addedAt" th:field="*{addedAt}">
+                            
+                                <button type="submit" class="btn waves-effect waves-light btn-info m-t-20">Add</button>
+                            </form>
+                            
+                            <h4 class="card-title">My budget history</h4>
+                            <div class="table-responsive m-t-40">
+                                <table id="config-table" class="table display table-bordered table-striped no-wrap">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Amount</th>
+                                        <th>Added at</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="budget : ${budgets}">
+                                            <td th:text="${budget.id}"></td>
+                                            <td th:text="${budget.amount}"></td>
+                                            <td th:text="${#temporals.format(budget.addedAt, 'dd-MM-yyyy HH:mm')}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Page Content -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Right sidebar -->
+            <!-- ============================================================== -->
+            <!-- .right-sidebar -->
+            <div th:insert="~{/general/right-sidebar.html}"></div>
+            <!-- ============================================================== -->
+            <!-- End Right sidebar -->
+            <!-- ============================================================== -->
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Container fluid  -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Page wrapper  -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- footer -->
+    <!-- ============================================================== -->
+    <div th:insert="~{/general/footer.html}"></div>
+    <!-- ============================================================== -->
+    <!-- End footer -->
+    <!-- ============================================================== -->
+</div>
+<!-- ============================================================== -->
+<!-- End Wrapper -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- All Jquery -->
+<!-- ============================================================== -->
+<script th:inline="javascript">
+    var home = /*[[${home}]]*/ null;
+</script>
+<script th:src="@{/js/library/jquery-3.2.1.min.js}" type="text/javascript"></script>
+<!--    &lt;!&ndash; Bootstrap tether Core JavaScript &ndash;&gt;-->
+<script th:src="@{/js/library/popper.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/library/bootstrap.min.js}" type="text/javascript"></script>
+<!--    &lt;!&ndash; slimscrollbar scrollbar JavaScript &ndash;&gt;-->
+<script th:src="@{/js/library/perfect-scrollbar.jquery.min.js}" type="text/javascript"></script>
+<!--Wave Effects -->
+<script th:src="@{/js/library/waves.js}" type="text/javascript"></script>
+<!--Menu sidebar -->
+<script th:src="@{/js/library/sidebarmenu.js}" type="text/javascript"></script>
+<!--stickey kit -->
+<script th:src="@{/js/library/sticky-kit.min.js}"></script>
+<script th:src="@{/js/library/jquery.sparkline.min.js}" type="text/javascript"></script>
+<!--Custom JavaScript -->
+<script th:src="@{/js/library/custom.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/library/moment.js}"></script>
+<script th:src="@{/js/library/jquery-clockpicker.min.js}"></script>
+<script th:src="@{/js/library/bootstrap-material-datetimepicker.js}"></script>
+<script th:src="@{/js/library/bootstrap-datepicker.min.js}"></script>
+<script th:src="@{/js/library/tagify.min.js}"></script>
+<script th:src="@{/js/library/tagify.polyfills.min.js}"></script>
+<!-- Editable -->
+<script th:src="@{/js/library/jquery.dataTables.min.js}"></script>
+<script th:src="@{/js/library/dataTables.responsive.min.js}"></script>
+<!-- <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("addBudgetForm");
+        const theAmountInput = document.getElementById("theamount");
+        const actualBudget = parseFloat("[[${actual_budget}]]");
+        const maxBudget = parseFloat("[[${max_budget}]]");
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault(); // Empêcher l'envoi automatique du formulaire
+
+            let theAmount = parseFloat(theAmountInput.value);
+            if (isNaN(theAmount)) {
+                alert("Please enter a valid amount.");
+                return;
+            }
+
+            let newBudget = actualBudget + theAmount;
+
+            if (newBudget > maxBudget) {
+                if (!confirm(`This action will exceed the max budget (${maxBudget}). Do you want to continue?`)) {
+                    return;
+                }
+            }
+
+
+            form.submit(); // Envoi du formulaire si confirmé
+        });
+    });
+</script> -->
+
+<script>
+    $('#config-table').DataTable({
+        responsive: true
+    });
+</script>
+<script>
+    // MAterial Date picker
+    $('#mdate').bootstrapMaterialDatePicker({ weekStart: 0, time: false });
+    $('#timepicker').bootstrapMaterialDatePicker({ format: 'HH:mm', time: true, date: false });
+    $('#date-format').bootstrapMaterialDatePicker({ format: 'dddd DD MMMM YYYY - HH:mm' });
+
+    $('#min-date').bootstrapMaterialDatePicker({ format: 'DD/MM/YYYY HH:mm', minDate: new Date() });
+    // Clock pickers
+    $('#single-input').clockpicker({
+        placement: 'bottom',
+        align: 'left',
+        autoclose: true,
+        'default': 'now'
+    });
+    $('.clockpicker').clockpicker({
+        autoclose: true,
+        donetext: 'Done',
+    }).find('input').change(function() {
+        console.log(this.value);
+    });
+    $('#check-minutes').click(function(e) {
+        // Have to stop propagation here
+        e.stopPropagation();
+        input.clockpicker('show').clockpicker('toggleView', 'minutes');
+    });
+    if (/mobile/i.test(navigator.userAgent)) {
+        $('input').prop('readOnly', true);
+    }
+    // Date Picker
+    jQuery('.mydatepicker, #datepicker').datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+    jQuery('#date-range').datepicker({
+        toggleActive: true
+    });
+    jQuery('#datepicker-inline').datepicker({
+        todayHighlight: true
+    });
+
+    // -------------------------------
+    var input = document.querySelector('#email-input');
+var tagify = new Tagify(input, {
+<!--    enforceWhitelist: true,-->
+    whitelist: [], // Specify a predefined list of email suggestions if desired
+    maxTags: Infinity, // Set the maximum number of email tags
+    backspace: 'edit', // Allow editing of tags using the backspace key
+    placeholder: 'Enter emails...', // Placeholder text for the input field
+    dropdown: {
+        enabled: 0, // Disable the email suggestions dropdown
+    },
+});
+    // Update the email input value when tags are added or removed
+    tagify.on('add', e => updateInputValue());
+    tagify.on('remove', e => updateInputValue());
+
+function updateInputValue() {
+    var emails = tagify.value.map(tag => tag.value);
+    document.getElementById('emails').value = emails.join(',');
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/general.css">
+</head>
+<body>
+    
+    <!--sidebar-->
+    <div class="sidebar d-flex flex-column p-3" id="sidebar">
+        <img src="~/img/crm-logo.png" alt="Logo Agence" id="logoAgence">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" asp-area="" asp-controller="Navigation" asp-action="Home">
+                    <img src="~/icons/house.svg" alt="Home" class="nav-icon">
+                    Home
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="graphsDropdown" role="button" data-bs-toggle="dropdown">
+                    <img src="~/icons/bar-chart-fill.svg" alt="graphs" class="nav-icon">
+                    Graphs
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" asp-area="" asp-controller="Navigation" asp-action="Graphs">See</a></li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="configDropdown" role="button" data-bs-toggle="dropdown">
+                    <img src="~/icons/gear.svg" alt="Réservation" class="nav-icon">
+                    Configuration
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" asp-area="" asp-controller="Navigation" asp-action="ConfigBudget"> Budget </a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-area="" asp-controller="Navigation" asp-action="Import">
+                    <img src="~/icons/arrow-down-square.svg" alt="Import" class="nav-icon">
+                    Import
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Logout", "Login")">
+                    <img src="~/icons/box-arrow-right.svg" alt="Disconnect" class="nav-icon">
+                    Disconnect
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    <!--sidebar-->
+    
+    <!--main content-->
+    <main class="content" id="content">
+        @RenderBody()
+    </main>
+    <!--main content-->
+    
+    <script src="~/lib/bootstrap/dist/js/chart.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    <script src="~/js/helper/sidebarToogle.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

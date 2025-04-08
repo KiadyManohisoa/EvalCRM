@@ -1,0 +1,39 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<button id="toggleSidebar" class="btn btn-secondary mb-3">&#9776;</button>
+    <div class="pagetitle">
+        <h1>Section import</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Import</a></li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="card">
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        
+        <h3 class="mb-3">Import</h3>
+        <form asp-controller="Import" asp-action="Import" method="post" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="alert_rate" class="form-label">Customer file</label>
+                    <input type="file" name="file_name" class="form-control" id="alert_rate">
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-center mt-3">
+                <button type="submit" class="btn btn-secondary">Validate</button>
+            </div>      
+        </form>
+    
+    </div>

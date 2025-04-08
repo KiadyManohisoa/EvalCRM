@@ -1,0 +1,172 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<button id="toggleSidebar" class="btn btn-secondary mb-3">&#9776;</button>
+<div class="pagetitle">
+    <h1>Dashboard section</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+            <li class="breadcrumb-item active">Graphs</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="card">
+    <h3 class="mb-3">Dashboard graphs</h3>
+
+    <!-- Stats Cards Row -->
+    <div class="row mb-4">
+
+        <!-- Leads Card -->
+        <div class="col-md-4 mb-3">
+            <div class="card info-card sales-card">
+                <div class="card-body">
+                    <h5 class="card-title">Leads</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6 id="leadsCount">0</h6>
+                            <span class="text-success small pt-1 fw-bold">x%</span>
+                            <span class="text-muted small pt-2 ps-1">increase</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tickets Card -->
+        <div class="col-md-4">
+            <div class="card info-card revenue-card">
+                <div class="card-body">
+                    <h5 class="card-title">Tickets</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-ticket-detailed"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6 id="ticketsCount">0</h6>
+                            <span class="text-success small pt-1 fw-bold">x%</span>
+                            <span class="text-muted small pt-2 ps-1">increase</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expenses Card -->
+        <div class="col-md-4">
+            <div class="card info-card customers-card">
+                <div class="card-body">
+                    <h5 class="card-title">Expenses</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6 id="expensesTotal">$0</h6>
+                            <span class="text-danger small pt-1 fw-bold">x%</span>
+                            <span class="text-muted small pt-2 ps-1">decrease</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card info-card sales-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Budget</h5>
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <div class="ps-3">
+                                <h6 id="totalBudget"></h6>
+                                <span class="text-success small pt-1 fw-bold">x%</span>
+                                <span class="text-muted small pt-2 ps-1">increase</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+
+    <form asp-controller="Sales" asp-action="GetSalesData" method="post">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="min_date" class="form-label">Lower date</label>
+                <input type="date" name="lower_date" class="form-control" id="min_date">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="max_date" class="form-label">Upper date</label>
+                <input type="date" name="upper_date" class="form-control" id="max_date">
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-center mt-3">
+            <button type="submit" class="btn btn-secondary">Search</button>
+        </div>      
+    </form>
+
+    <!-- First Row - Sales Chart -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <h5 class="card-title text-center mb-3">Over the time </h5>
+            <div class="chart-container" style="position: relative; height: 60vh; width: 100%;">
+                <canvas id="salesChart"></canvas>
+            </div>
+            @* <div class="mt-4">
+                <h6 class="text-muted">Key Insights:</h6>
+                <ul class="list-unstyled">
+                    <li>✓ Entity A shows consistent growth throughout the year</li>
+                    <li>✓ Entity B maintains steady performance with gradual improvement</li>
+                    <li>✓ Both entities demonstrate positive sales trends</li>
+                </ul>
+            </div> *@
+        </div>
+    </div>
+
+    <!-- Second Row - Expenses Pie Chart -->
+    <div class="row mt-5">
+        <div class="col-md-8 mx-auto">
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-3">Expense Distribution</h5>
+                    <div class="chart-container" style="position: relative; height: 50vh;">
+                        <canvas id="expensesChart"></canvas>
+                    </div>
+                    <div class="mt-3 text-center">
+                        <h6 class="text-muted">Expense Breakdown</h6>
+                        <div class="d-flex justify-content-center">
+                            <ul class="list-unstyled">
+                                <li><span class="badge bg-primary me-2"></span> Tickets: $12,450 (58.7%)</li>
+                                <li><span class="badge bg-success me-2"></span> Leads: $8,750 (41.3%)</li>
+                                <li class="fw-bold mt-2">Total: $21,200</li>
+                            </ul>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12 d-flex justify-content-center gap-3">
+            <a href="/ticket/list">
+                <button type="button" class="btn btn-secondary px-5">Tickets list</button>    
+            </a>
+            <a href="">
+                <button type="button" class="btn btn-secondary px-5">Leads list</button>    
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<script src="~/js/chart/financialStat.js"></script>
+<script src="~/js/chart/chart1.js"></script>
+<script src="~/js/chart/chart2.js"></script>
