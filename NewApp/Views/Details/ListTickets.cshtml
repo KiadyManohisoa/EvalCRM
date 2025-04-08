@@ -1,0 +1,58 @@
+@model List<NewCRMApp.Models.Ticket>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<button id="toggleSidebar" class="btn btn-secondary mb-3">&#9776;</button>
+    <div class="pagetitle">
+        <h1>Section Tickets</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Details</a></li>
+                <li class="breadcrumb-item active">Tickets</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="card">
+
+    <h3 class="mb-3">Tickets list</h3>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-warning text-center">Aucun ticket trouvé.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Subject</th>
+                <th>Statut</th>
+                <th>Priority</th>
+                <th>Created at</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ticket in Model)
+            {
+                <tr>
+                    <td>@ticket.TicketId</td>
+                    <td>@ticket.Subject</td>
+                    <td>@ticket.Status</td>
+                    <td>@ticket.Priority</td>
+                    <td>@ticket.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+    
+    </div>

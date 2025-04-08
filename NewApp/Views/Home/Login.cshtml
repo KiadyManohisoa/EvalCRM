@@ -1,0 +1,78 @@
+﻿@model NewCRMApp.Models.AuthRequest
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/login.css">
+</head>
+<body>
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+        
+    <div class="logo-container">
+        <img src="~/img/crm-logo.png" alt="Logo Agence">
+    </div>
+    
+
+    <div class="login-container">
+        
+        <ul class="nav nav-tabs w-100 d-flex" id="loginTabs" role="tablist">
+            <li class="nav-item flex-fill" role="presentation">
+                <button class="nav-link active w-100" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button" role="tab" aria-selected="false" tabindex="-1">ADMIN</button>
+            </li>
+            <li class="nav-item flex-fill" role="presentation">
+                <button class="nav-link w-100" id="user-tab" data-bs-toggle="tab" data-bs-target="#user" type="button" role="tab" aria-selected="true">UTILISATEUR</button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="loginTabsContent">
+            
+            <div class="tab-pane fade show active" id="admin" role="tabpanel">
+                <h1 class="h4 text-center">Login Admin</h1>
+                <form asp-controller="Login" asp-action="Login" method="post">
+                    <div class="form-floating mb-3">
+                        <input asp-for="Username" class="form-control" placeholder="Nom d'utilisateur" required>
+                        <label asp-for="Username">Username</label>
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Mot de passe" required>
+                        <label asp-for="Password">Password</label>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <button class="btn btn-secondary w-100" type="submit">Log-in</button>
+                </form>
+            </div>
+            <div class="tab-pane fade" id="user" role="tabpanel">
+                <h1 class="h4 text-center">Login Utilisateur</h1>
+                <form>
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" placeholder="name@example.com">
+                        <label>Email</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" placeholder="Password">
+                        <label>Password</label>
+                    </div>
+                    <button class="btn btn-secondary w-100" type="submit">Log-in</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+    
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

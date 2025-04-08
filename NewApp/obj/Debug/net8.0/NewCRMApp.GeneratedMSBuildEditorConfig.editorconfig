@@ -1,0 +1,67 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = NewCRMApp
+build_property.RootNamespace = NewCRMApp
+build_property.ProjectDir = D:\Studies\ITU\S6\Evaluation\Episode 1\.net-app\NewCRMApp\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = D:\Studies\ITU\S6\Evaluation\Episode 1\.net-app\NewCRMApp
+build_property._RazorSourceGeneratorDebug = 
+
+[D:/Studies/ITU/S6/Evaluation/Episode 1/.net-app/NewCRMApp/Views/Details/ListTickets.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGV0YWlsc1xMaXN0VGlja2V0cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Studies/ITU/S6/Evaluation/Episode 1/.net-app/NewCRMApp/Views/Home/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Studies/ITU/S6/Evaluation/Episode 1/.net-app/NewCRMApp/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Studies/ITU/S6/Evaluation/Episode 1/.net-app/NewCRMApp/Views/Navigation/ConfigBudget.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTmF2aWdhdGlvblxDb25maWdCdWRnZXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Studies/ITU/S6/Evaluation/Episode 1/.net-app/NewCRMApp/Views/Navigation/Graphs.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTmF2aWdhdGlvblxHcmFwaHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Studies/ITU/S6/Evaluation/Episode 1/.net-app/NewCRMApp/Views/Navigation/Home.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTmF2aWdhdGlvblxIb21lLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Studies/ITU/S6/Evaluation/Episode 1/.net-app/NewCRMApp/Views/Navigation/Import.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTmF2aWdhdGlvblxJbXBvcnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Studies/ITU/S6/Evaluation/Episode 1/.net-app/NewCRMApp/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Studies/ITU/S6/Evaluation/Episode 1/.net-app/NewCRMApp/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Studies/ITU/S6/Evaluation/Episode 1/.net-app/NewCRMApp/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Studies/ITU/S6/Evaluation/Episode 1/.net-app/NewCRMApp/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Studies/ITU/S6/Evaluation/Episode 1/.net-app/NewCRMApp/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 

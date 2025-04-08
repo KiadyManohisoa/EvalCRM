@@ -1,0 +1,46 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<button id="toggleSidebar" class="btn btn-secondary mb-3">&#9776;</button>
+    <div class="pagetitle">
+        <h1>Budget section</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Budget</a></li>
+                <li class="breadcrumb-item active">Configuration</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="card">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+        
+        <h3 class="mb-3">Budget configuration</h3>
+        <form asp-controller="BudgetConfig" asp-action="Config" method="post">
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="alert_rate" class="form-label">Alert rate (%)</label>
+                    <input type="number" step="0.01" name="new_alert_rate" class="form-control" id="alert_rate">
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-center mt-3">
+                <button type="submit" class="btn btn-secondary">Validate</button>
+            </div>      
+        </form>
+    
+    </div>
